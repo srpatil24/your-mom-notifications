@@ -4,6 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { getWeatherData } from './weather.js';
+import { getRoutes } from './map.js';
 
 dotenv.config();
 
@@ -30,5 +31,17 @@ const testGetWeatherData = async () => {
   }
 };
 
+// Function to test getWeatherData
+const testgetRoutes = async () => {
+  try {
+    const routeData = await getRoutes();
+  } catch (error) {
+    console.error('Error fetching route data:', error);
+  }
+};
+
 // Invoke the test function
 testGetWeatherData();
+
+// Invoke the test function
+testgetRoutes();
