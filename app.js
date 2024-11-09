@@ -1,8 +1,9 @@
 // app.js
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import { getWeatherData } from './weather.js';
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.get('/', (req, res) => {
   res.send('Backend Server is Running');
@@ -19,3 +20,16 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Function to test getWeatherData
+const testGetWeatherData = async () => {
+  try {
+    const weatherData = await getWeatherData();
+    console.log('Weather data retrieved successfully:', weatherData);
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+  }
+};
+
+// Invoke the test function
+testGetWeatherData();
