@@ -36,6 +36,28 @@ async function getWeatherData() {
       },
     };
 
+    const tableData = [];
+
+    for (let i = 0; i < weatherData.hourly.time.length; i++) {
+      tableData.push({
+        Time: weatherData.hourly.time[i].toLocaleString('en-US', {
+          timeZone: 'America/Chicago',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: false,
+        }),
+        'Temperature (°C)': weatherData.hourly.temperature2m[i],
+        'Feels Like (°C)': weatherData.hourly.apparentTemperature[i],
+        'Precipitation Probability (%)': weatherData.hourly.precipitationProbability[i],
+        'Precipitation (mm)': weatherData.hourly.precipitation[i],
+      });
+    }
+
+    console.table(tableData);
+
     return weatherData;
   } catch (error) {
     console.error('Error fetching weather data:', error);

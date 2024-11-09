@@ -25,7 +25,6 @@ app.listen(PORT, () => {
 const testGetWeatherData = async () => {
   try {
     const weatherData = await getWeatherData();
-    console.log('Weather data retrieved successfully:', weatherData);
   } catch (error) {
     console.error('Error fetching weather data:', error);
   }
