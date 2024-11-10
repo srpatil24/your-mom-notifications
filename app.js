@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { getWeatherData } from './weather.js';
 import { getRoutes } from './map.js';
 import { getEvents } from './events.js';
+import { getTodoItems, processTodoItems } from './canvas.js';
 
 dotenv.config();
 
@@ -15,13 +16,13 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5000;
 
-app.get('/', (req, res) => {
-  res.send('Backend Server is Running');
-});
+// app.get('/', (req, res) => {
+//   res.send('Backend Server is Running');
+// });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
 
 const testGetWeatherData = async () => {
   try {
@@ -32,7 +33,7 @@ const testGetWeatherData = async () => {
   }
 };
 
-const testgetRoutes = async () => {
+const testGetRoutes = async () => {
   try {
     const routeData = await getRoutes();
     console.log(routeData);
@@ -41,7 +42,7 @@ const testgetRoutes = async () => {
   }
 };
 
-const testgetEvents = async () => {
+const testGetEvents = async () => {
   try {
     const eventData = await getEvents();
     console.log(eventData);
@@ -50,6 +51,27 @@ const testgetEvents = async () => {
   }
 };
 
-testGetWeatherData();
-testgetRoutes();
-testgetEvents();
+const testGetTodoItems = async () => {
+  try {
+    const todoItems = await getTodoItems();
+    console.log(todoItems[0]);
+  } catch (error) {
+    console.error('Error fetching todo items:', error);
+  }
+};
+
+const testProcessTodoItems = async () => {
+  try {
+    const items = await getTodoItems();
+    const todoItems = await processTodoItems(items);
+    console.log(todoItems);
+  } catch (error) {
+    console.error('Error processing todo items:', error);
+  }
+};
+
+// testGetWeatherData();
+// testGetRoutes();
+// testGetEvents();
+// testGetTodoItems();
+testProcessTodoItems();
