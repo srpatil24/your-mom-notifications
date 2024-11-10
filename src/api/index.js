@@ -4,3 +4,4 @@ export { getRoutes } from './map.js';
 export { getWeatherData } from './weather.js'; 
 export { getCourses, processCourses } from './courses.js';
 export { getCourseInfo } from './courseinfo.js';
+export { getEnrollmentPackages, processClassMeetings } from './enrollmentPackages.js';

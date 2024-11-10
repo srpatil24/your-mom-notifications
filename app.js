@@ -11,15 +11,17 @@ const apiClient = axios.create({
 });
 
 // Import your API functions
-import { 
-  getWeatherData, 
-  getRoutes, 
-  getEvents, 
-  getTodoItems, 
-  processTodoItems, 
-  getCourses, 
-  processCourses, 
-  getCourseInfo 
+import {
+  getWeatherData,
+  getRoutes,
+  getEvents,
+  getTodoItems,
+  processTodoItems,
+  getCourses,
+  processCourses,
+  getCourseInfo,
+  getEnrollmentPackages,
+  processClassMeetings
 } from './src/api/index.js';
 
 apiClient.interceptors.request.use(
@@ -81,11 +83,49 @@ const testCourses = async () => {
   try {
     const courses = await getCourses();
     const processed = await processCourses(courses);
-    const info = await getCourseInfo('COMP SCI 544');
     console.log('Courses test:', processed);
-    return { processed, info };
+    return processed;
   } catch (error) {
     console.error('Courses test failed:', error);
     throw error;
   }
 };
+
+const testCourseInfo = async () => {
+  try {
+    const info = await getCourseInfo('COMP SCI 544');
+    console.log('Course info test:', info);
+    return info;
+  } catch (error) {
+    console.error('Course info test failed:', error);
+    throw error;
+  }
+};
+
+const testAllCourses = async () => {
+  try {
+    // First get and process courses from Canvas
+    const courses = await getCourses();
+    const processedCourses = await processCourses(courses);
+
+    // Then get additional info for each processed course
+    const coursesWithInfo = await Promise.all(
+      processedCourses.map(async (course) => {
+        const info = await getCourseInfo(course);
+        console.log(info);
+        // return {
+        //   ...course,
+        //   additional_info: info
+        // };
+      })
+    );
+
+    console.log('Courses with info:', coursesWithInfo);
+    return coursesWithInfo;
+  } catch (error) {
+    console.error('Courses test failed:', error);
+    throw error;
+  }
+};
+
+testAllCourses();
