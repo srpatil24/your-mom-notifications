@@ -9,6 +9,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { getWeatherData } from '../../weather.js';
 import { getTodoItems, processTodoItems } from '../../canvas.js';
+import { LinearGradient } from 'expo-linear-gradient';
 
 let sampleEventsJson = [
   {
@@ -109,12 +110,12 @@ export default function TabOneScreen() {
   }, []);
 
   useEffect(() => {
-    async function fetchEvents(){
+    async function fetchEvents() {
       try {
         const todoItems = await getTodoItems();
         const processedItems = await processTodoItems(todoItems);
         setEvents(processedItems);
-      } catch (error){  
+      } catch (error) {
         console.error('Error fetching events:', error);
       }
     }
@@ -124,18 +125,31 @@ export default function TabOneScreen() {
   return (
     <View>
       <ScrollView>
-        <View style={styles.weatherContainer}>
-          <FontAwesome
-            name="pencil"
-            size={25}
-            color={Colors[colorScheme ?? 'light'].text}
-            style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
-          />
-          <View style={{ backgroundColor: "gray", justifyContent: "flex-end" }}>
-            <Text style={styles.currTemperature}>{weatherData ? weatherData.current.apparentTemperature : 'Loading temperature...'}°F</Text>
-            <Text style={styles.maxPrecProb}>{weatherData ? weatherData.daily.precipitationProbability : 'Loading chance of rain...'}% rain</Text>
+        <LinearGradient
+          colors={['#e0e5ec', '#ffffff']}
+          start={[0, 0]}
+          end={[1, 1]}
+          style={styles.weatherContainer}
+        >
+          <View style={{
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            backgroundColor: 'transparent'
+          }}>
+            <Text style={styles.iconWithOutline}>
+              <FontAwesome
+                name="cloud"
+                size={25}
+                color={Colors[colorScheme ?? 'light'].text}
+              />
+            </Text>
           </View>
-        </View>
+          <View style={{ backgroundColor: "transparent", justifyContent: "flex-end" }}>
+            <Text style={styles.currTemperature}>{weatherData ? weatherData.current.apparentTemperature : 'Loading temperature...'}<Text style={styles.degreeSymbol}>°F</Text></Text>
+            <Text style={styles.maxPrecProb}>{weatherData ? weatherData.daily.precipitationProbability : 'Loading chance of rain...'}% chance of rain</Text>
+          </View>
+        </LinearGradient>
         {events.map((event: Event) => (
           <TouchableOpacity key={event.assignment.name}>
             <EventContainer event={event} />
@@ -223,33 +237,45 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   weatherContainer: {
-    // flexDirection: 'row',
-    width: '100%',
+    width: '90%',
     alignSelf: "center",
-    height: 200,
-    // height: "100%",
-    marginBottom: 10,
-    marginTop: 10,
-    // padding: 10,
-    backgroundColor: 'gray',
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderTopRightRadius: 20,
-    // height: 'auto' removed
+    height: 180,
+    marginBottom: 20,
+    marginTop: 20,
+    padding: 20,
+    backgroundColor: 'linear-gradient(145deg, #e0e5ec, #ffffff)', // Smooth gradient
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 10,
+    justifyContent: 'flex-end', // Aligns content to the bottom
   },
   currTemperature: {
-    fontSize: 40,
-    fontFamily: 'monospace',
+    fontSize: 48,
+    fontFamily: 'serif',
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 10
+    color: '#333',
+    lineHeight: 48,
+    backgroundColor: 'transparent',
+  },
+  degreeSymbol: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#666',
+    backgroundColor: 'transparent',
+  },
+  iconWithOutline: {
+    textShadowColor: 'black',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   maxPrecProb: {
-    fontSize: 30,
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 0
+    fontSize: 18,
+    fontFamily: 'serif',
+    color: '#777',
+    marginTop: 4,
+    backgroundColor: 'transparent',
   }
 });

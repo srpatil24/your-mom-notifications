@@ -1,4 +1,4 @@
-import ical from 'node-ical';
+import ICAL from 'ical.js';  // Adjust the path as necessary
 
 // URL of the ICS file
 const url = 'https://today.wisc.edu/events.ics';
@@ -10,26 +10,22 @@ async function getEvents() {
         const icsData = await response.text();
 
         // Parse the ICS data
-        const data = ical.parseICS(icsData);
-
-        // Array to store formatted events
+        const jcalData = ICAL.parse(icsData);  // Parse to jCal format
+        const comp = new ICAL.Component(jcalData);
         const events = [];
 
-        // Iterate over the events and format details
-        for (let k in data) {
-            if (data.hasOwnProperty(k)) {
-                let event = data[k];
-                if (event.type === 'VEVENT') {
-                    events.push({
-                        title: event.summary,
-                        start: event.start.toISOString(),
-                        end: event.end.toISOString(),
-                        location: event.location || null,
-                        description: event.description || null
-                    });
-                }
-            }
-        }
+        // Iterate over each VEVENT component and format event details
+        comp.getAllSubcomponents('vevent').forEach(eventComp => {
+            const event = new ICAL.Event(eventComp);
+            events.push({
+                title: event.summary,
+                start: event.startDate.toString(),
+                end: event.endDate.toString(),
+                location: event.location || null,
+                description: event.description || null
+            });
+        });
+
         return events;
     } catch (error) {
         console.error('Error fetching or parsing ICS file:', error);
