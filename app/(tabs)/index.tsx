@@ -1,5 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
+import * as Location from 'expo-location';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -43,6 +45,31 @@ let sampleEventsJson = [
   }
 ]
 
+  let latitude: number | null = null;
+  let longitude: number | null = null;
+  let isLocationLoaded = false;
+
+  const updateLocation = async () => {
+    isLocationLoaded=false;
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    latitude = location.coords.latitude;
+    longitude = location.coords.longitude;
+    isLocationLoaded = true;
+    console.log("Updated latitude:", latitude);
+    console.log("Updated longitude:", longitude);
+  };
+
+  // Initial location fetch
+  updateLocation();
+
+  
+
 interface Event {
   assignment: {
     name: string;
@@ -53,14 +80,28 @@ interface Event {
 }
 
 export default function TabOneScreen() {
+  const colorScheme = useColorScheme();
   return (
     <View>
-      {sampleEventsJson.map((event: Event) => (
-        <TouchableOpacity key={event.assignment.name}>
-          <EventContainer event={event} />
-        </TouchableOpacity>
-      ))}
-    </View>
+      <ScrollView>
+      <View style={{}}>
+      <FontAwesome
+            name="pencil"
+            size={25}
+            color={Colors[colorScheme ?? 'light'].text}
+            style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
+          />
+        <Text>56 C</Text>
+        <Text>% change of precipitation</Text>
+      </View>
+        {sampleEventsJson.map((event: Event) => (
+          <TouchableOpacity key={event.assignment.name}>
+            <EventContainer event={event} />
+          </TouchableOpacity>
+        ))}
+    
+      </ScrollView >
+    </View >
   );
 }
 
@@ -68,26 +109,21 @@ export default function TabOneScreen() {
 function EventContainer({ event }: { event: any }) {
   const colorScheme = useColorScheme();
   return (
-    <View>
-      <View style={{}}>
-
-      </View>
-      <View style={styles.eventContainer}>
-        <FontAwesome
-          name="pencil"
-          size={25}
-          color={Colors[colorScheme ?? 'light'].text}
-          style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
-        />
-        <View style={styles.contentContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.eventTitle}>{event.assignment.name}</Text>
-            <Text style={styles.courseName}>{event.context_name}</Text>
-            <Text style={styles.eventDueDate}>Due: {event.assignment.due_at}</Text>
+        <View style={styles.eventContainer}>
+          <FontAwesome
+            name="pencil"
+            size={25}
+            color={Colors[colorScheme ?? 'light'].text}
+            style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
+          />
+          <View style={styles.contentContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.eventTitle}>{event.assignment.name}</Text>
+              <Text style={styles.courseName}>{event.context_name}</Text>
+              <Text style={styles.eventDueDate}>Due: {event.assignment.due_at}</Text>
+            </View>
           </View>
         </View>
-      </View>
-    </View>
   );
 }
 
