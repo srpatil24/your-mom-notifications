@@ -75,7 +75,7 @@ const testProcessTodoItems = async () => {
   }
 };
 
-// testGetWeatherData();
+testGetWeatherData();
 testGetRoutes();
 // testGetEvents();
 // testGetTodoItems();
