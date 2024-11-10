@@ -7,6 +7,8 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
+import { getWeatherData } from '../../weather.js';
+
 let sampleEventsJson = [
   {
     "assignment": {
@@ -45,30 +47,46 @@ let sampleEventsJson = [
   }
 ]
 
-  let latitude: number | null = null;
-  let longitude: number | null = null;
-  let isLocationLoaded = false;
+async function getLocation(): Promise<{ lat: number | null, long: number | null }> {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== 'granted') {
+    console.error('Permission to access location was denied');
+    return { lat: null, long: null };
+  }
 
-  const updateLocation = async () => {
-    isLocationLoaded=false;
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.error('Permission to access location was denied');
-      return;
-    }
+  let location = await Location.getCurrentPositionAsync({});
+  let { latitude, longitude } = location.coords;
 
-    let location = await Location.getCurrentPositionAsync({});
-    latitude = location.coords.latitude;
-    longitude = location.coords.longitude;
-    isLocationLoaded = true;
-    console.log("Updated latitude:", latitude);
-    console.log("Updated longitude:", longitude);
+  return { lat: latitude, long: longitude };
+};
+
+interface WeatherData {
+  current: {
+    temperature2m: number;
+    apparentTemperature: number;
+    precipitation: number;
   };
+  daily: {
+    precipitationProbability: number;
+  };
+}
 
-  // Initial location fetch
-  updateLocation();
+let weatherData: WeatherData | null = null;
 
-  
+async function getWeather() {
+  // const latitude = 43.074302; // Replace with desired latitude
+  // const longitude = -89.400024; // Replace with desired longitude
+
+  const location = await getLocation().catch(error => {
+    console.error('Error fetching location:', error);
+    return { lat: 43.074302, long: -89.400024 };
+  });
+
+  return getWeatherData(location.lat, location.long).catch(error => {
+    console.error('Error fetching weather:', error);
+    return null;
+  });
+}
 
 interface Event {
   assignment: {
@@ -81,25 +99,31 @@ interface Event {
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
+
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  useEffect(() => {
+    getWeather().then(setWeatherData);
+  }, []);
+
   return (
     <View>
       <ScrollView>
-      <View style={{}}>
-      <FontAwesome
+        <View style={{}}>
+          <FontAwesome
             name="pencil"
             size={25}
             color={Colors[colorScheme ?? 'light'].text}
             style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
           />
-        <Text>56 C</Text>
-        <Text>% change of precipitation</Text>
-      </View>
+            <Text>{weatherData ? weatherData.current.apparentTemperature : 'Loading temperature...'}</Text>
+            <Text>{weatherData ? weatherData.daily.precipitationProbability : 'Loading chance of rain...'}</Text>
+        </View>
         {sampleEventsJson.map((event: Event) => (
           <TouchableOpacity key={event.assignment.name}>
             <EventContainer event={event} />
           </TouchableOpacity>
         ))}
-    
+
       </ScrollView >
     </View >
   );
@@ -109,21 +133,21 @@ export default function TabOneScreen() {
 function EventContainer({ event }: { event: any }) {
   const colorScheme = useColorScheme();
   return (
-        <View style={styles.eventContainer}>
-          <FontAwesome
-            name="pencil"
-            size={25}
-            color={Colors[colorScheme ?? 'light'].text}
-            style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
-          />
-          <View style={styles.contentContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.eventTitle}>{event.assignment.name}</Text>
-              <Text style={styles.courseName}>{event.context_name}</Text>
-              <Text style={styles.eventDueDate}>Due: {event.assignment.due_at}</Text>
-            </View>
-          </View>
+    <View style={styles.eventContainer}>
+      <FontAwesome
+        name="pencil"
+        size={25}
+        color={Colors[colorScheme ?? 'light'].text}
+        style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
+      />
+      <View style={styles.contentContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.eventTitle}>{event.assignment.name}</Text>
+          <Text style={styles.courseName}>{event.context_name}</Text>
+          <Text style={styles.eventDueDate}>Due: {event.assignment.due_at}</Text>
         </View>
+      </View>
+    </View>
   );
 }
 
