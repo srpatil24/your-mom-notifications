@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-
-const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
+const CANVAS_API_TOKEN = '8396~WAGHVha388TGKAfJEJcrnG7rZwE6KufwFhtQtXTfTmJT8mycec878PtUkXZe3Dxh';
 const CANVAS_API_BASE_URL = 'https://canvas.wisc.edu';
 
 // Step 1: Fetch Todo Items
@@ -39,7 +36,7 @@ async function processTodoItems(todoItems) {
         };
 
         // Fetch context name based on context_type
-        if (item.context_type === 'course' && item.course_id) {
+        if (item.course_id) {
             const courseResponse = await fetch(`${CANVAS_API_BASE_URL}/api/v1/courses/${item.course_id}`, {
                 headers: {
                     'Authorization': `Bearer ${CANVAS_API_TOKEN}`,
@@ -48,15 +45,6 @@ async function processTodoItems(todoItems) {
             });
             const course = await courseResponse.json();
             contextName = course.name;
-        } else if (item.context_type === 'group' && item.group_id) {
-            const groupResponse = await fetch(`${CANVAS_API_BASE_URL}/api/v1/groups/${item.group_id}`, {
-                headers: {
-                    'Authorization': `Bearer ${CANVAS_API_TOKEN}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const group = await groupResponse.json();
-            contextName = group.name;
         }
 
         sampleEventsJson.push({
@@ -69,31 +57,3 @@ async function processTodoItems(todoItems) {
 }
 
 export { getTodoItems, processTodoItems };
-
-(async () => {
-    try {
-        const todoItems = [
-            {
-                context_type: 'Course',
-                course_id: 412449,
-                context_name: 'COMPSCI354: Machine Organization and Programming (001) FA24',
-                type: 'submitting',
-                ignore: 'https://canvas.wisc.edu/api/v1/users/self/todo/assignment_2395155/submitting?permanent=0',
-                ignore_permanently: 'https://canvas.wisc.edu/api/v1/users/self/todo/assignment_2395155/submitting?permanent=1',
-                assignment: {
-                    id: 2395155,
-                    description: '<ul>...</ul>',
-                    due_at: '2024-11-10T05:59:00Z',
-                    name: 'A10',
-                    // other assignment properties...
-                },
-                html_url: 'https://canvas.wisc.edu/courses/412449/assignments/2395155#submit'
-            },
-            // ... include more todo items as needed
-        ];
-
-        const processedItems = await processTodoItems(todoItems);
-    } catch (error) {
-        console.error('Error processing todo items:', error);
-    }
-})();

@@ -8,6 +8,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { getWeatherData } from '../../weather.js';
+import { getTodoItems, processTodoItems } from '../../canvas.js';
 
 let sampleEventsJson = [
   {
@@ -90,8 +91,9 @@ async function getWeather() {
 
 interface Event {
   assignment: {
-    name: string;
-    due_at: string;
+    name?: string;
+    due_at?: string;
+    [key: string]: any;
   };
   context_name: string;
   html_url?: string;
@@ -101,24 +103,40 @@ export default function TabOneScreen() {
   const colorScheme = useColorScheme();
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
   useEffect(() => {
     getWeather().then(setWeatherData);
   }, []);
 
+  useEffect(() => {
+    async function fetchEvents(){
+      try {
+        const todoItems = await getTodoItems();
+        const processedItems = await processTodoItems(todoItems);
+        setEvents(processedItems);
+      } catch (error){  
+        console.error('Error fetching events:', error);
+      }
+    }
+    fetchEvents();
+  }, [events]);
+
   return (
     <View>
       <ScrollView>
-        <View style={{}}>
+        <View style={styles.weatherContainer}>
           <FontAwesome
             name="pencil"
             size={25}
             color={Colors[colorScheme ?? 'light'].text}
             style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
           />
-            <Text>{weatherData ? weatherData.current.apparentTemperature : 'Loading temperature...'}</Text>
-            <Text>{weatherData ? weatherData.daily.precipitationProbability : 'Loading chance of rain...'}</Text>
+          <View style={{ backgroundColor: "gray", justifyContent: "flex-end" }}>
+            <Text style={styles.currTemperature}>{weatherData ? weatherData.current.apparentTemperature : 'Loading temperature...'}°F</Text>
+            <Text style={styles.maxPrecProb}>{weatherData ? weatherData.daily.precipitationProbability : 'Loading chance of rain...'}% rain</Text>
+          </View>
         </View>
-        {sampleEventsJson.map((event: Event) => (
+        {events.map((event: Event) => (
           <TouchableOpacity key={event.assignment.name}>
             <EventContainer event={event} />
           </TouchableOpacity>
@@ -204,4 +222,34 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 5,
   },
+  weatherContainer: {
+    // flexDirection: 'row',
+    width: '100%',
+    alignSelf: "center",
+    height: 200,
+    // height: "100%",
+    marginBottom: 10,
+    marginTop: 10,
+    // padding: 10,
+    backgroundColor: 'gray',
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderTopRightRadius: 20,
+    // height: 'auto' removed
+  },
+  currTemperature: {
+    fontSize: 40,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 10
+  },
+  maxPrecProb: {
+    fontSize: 30,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 0
+  }
 });
