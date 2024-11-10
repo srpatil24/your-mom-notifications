@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
+import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
 
 import Colors from '@/constants/Colors';
@@ -62,6 +63,16 @@ async function getLocation(): Promise<{ lat: number | null, long: number | null 
   let { latitude, longitude } = location.coords;
 
   return { lat: latitude, long: longitude };
+};
+
+async function requestBackgroundPermissions() {
+  let { status } = await Location.requestBackgroundPermissionsAsync();
+  if (status !== 'granted') {
+    console.error('Permission to access location was denied');
+    return false;
+  }
+
+  return true;
 };
 
 interface WeatherData {
@@ -130,7 +141,8 @@ export default function TabOneScreen() {
         console.error('Error fetching events:', error);
       }
     }
-    fetchEvents();
+    const interval = setInterval(() => fetchEvents(), 60000);
+    return () => clearInterval(interval);
   }, [events]);
 
   return (
