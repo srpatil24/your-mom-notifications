@@ -11,10 +11,29 @@ const params = {
   timezone: 'America/Chicago',
 };
 
-const url = 'https://api.open-meteo.com/v1/forecast';
+// Function to get formatted date in YYYY-MM-DD
+function getFormattedDate(date) {
+  const year = date.getFullYear();
+  // Months are zero-indexed in JavaScript Date
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 async function getWeatherData() {
-  const queryString = new URLSearchParams(params).toString();
+  // Get today's date
+  const today = new Date();
+  const formattedDate = getFormattedDate(today);
+
+  // Add start_date and end_date to params for a single day
+  const singleDayParams = {
+    ...params,
+    start_date: formattedDate,
+    end_date: formattedDate,
+  };
+
+  const queryString = new URLSearchParams(singleDayParams).toString();
+  const url = 'https://api.open-meteo.com/v1/forecast';
   const fullUrl = `${url}?${queryString}`;
 
   try {
@@ -28,36 +47,13 @@ async function getWeatherData() {
 
     const weatherData = {
       hourly: {
-        time: hourly.time.map((t) => new Date(t)),
+        time: hourly.time.map((t) => new Date(t).toISOString()),
         temperature2m: hourly.temperature_2m,
         apparentTemperature: hourly.apparent_temperature,
         precipitationProbability: hourly.precipitation_probability,
-        precipitation: hourly.precipitation,
       },
     };
-
-    const tableData = [];
-
-    for (let i = 0; i < weatherData.hourly.time.length; i++) {
-      tableData.push({
-        Time: weatherData.hourly.time[i].toLocaleString('en-US', {
-          timeZone: 'America/Chicago',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false,
-        }),
-        'Temperature (°C)': weatherData.hourly.temperature2m[i],
-        'Feels Like (°C)': weatherData.hourly.apparentTemperature[i],
-        'Precipitation Probability (%)': weatherData.hourly.precipitationProbability[i],
-        'Precipitation (mm)': weatherData.hourly.precipitation[i],
-      });
-    }
-
-    console.table(tableData);
-
+    console.log(weatherData)
     return weatherData;
   } catch (error) {
     console.error('Error fetching weather data:', error);
