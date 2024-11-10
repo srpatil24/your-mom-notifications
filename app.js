@@ -20,7 +20,6 @@ import {
   getCourses,
   processCourses,
   getCourseInfo,
-  getEnrollmentPackages,
   processClassMeetings
 } from './src/api/index.js';
 
@@ -106,22 +105,23 @@ const testAllCourses = async () => {
   try {
     // First get and process courses from Canvas
     const courses = await getCourses();
+
+    // Step 2: Process Courses
     const processedCourses = await processCourses(courses);
 
-    // Then get additional info for each processed course
-    const coursesWithInfo = await Promise.all(
-      processedCourses.map(async (course) => {
-        const info = await getCourseInfo(course);
-        console.log(info);
-        // return {
-        //   ...course,
-        //   additional_info: info
-        // };
-      })
-    );
+    const courseInfos = [];
 
-    console.log('Courses with info:', coursesWithInfo);
-    return coursesWithInfo;
+    for (const course of processedCourses) {
+      try {
+        const info = await getCourseInfo(course);
+        courseInfos.push(info);
+      } catch (infoError) {
+        console.error(`Error fetching info for ${course}:`, infoError);
+      }
+    }
+
+    console.log('Detailed Course Infos:', courseInfos);
+    return courseInfos;
   } catch (error) {
     console.error('Courses test failed:', error);
     throw error;

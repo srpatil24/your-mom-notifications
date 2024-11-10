@@ -1,37 +1,64 @@
-const BASE_API_URL = 'https://public.enroll.wisc.edu/api/search/v1';
-const ENROLLMENT_PACKAGES_URL = `${BASE_API_URL}/enrollmentPackages`;
+// enrollmentPackages.js
+const BASE_API_URL = 'https://public.enroll.wisc.edu';
+const ENROLLMENT_PACKAGES_URL = `${BASE_API_URL}/api/search/v1/enrollmentPackages`;
+const SEARCH_URL = `${BASE_API_URL}/api/search/v1`;
 
-async function fetchWithConfig(url, method = 'GET', body = null) {
+// Search configuration
+const SEARCH_CONFIG = {
+    page: 1,
+    pageSize: 10,
+    sortOrder: 'SCORE',
+    filters: [{
+        has_child: {
+            type: 'enrollmentPackage',
+            query: {
+                bool: {
+                    must: [
+                        { match: { 'packageEnrollmentStatus.status': 'OPEN WAITLISTED CLOSED' } },
+                        { match: { 'published': true } }
+                    ]
+                }
+            }
+        }
+    }]
+};
+
+// Fetch configuration with additional headers
+async function fetchWithConfig(url, body = null) {
     const config = {
         credentials: 'include',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json',
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Sec-GPC': '1',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'Priority': 'u=0'
         },
-        method,
+        method: 'POST',
+        body: body ? JSON.stringify(body) : null,
         mode: 'cors'
     };
-    
-    if (body) {
-        config.body = JSON.stringify(body);
-    }
-    
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
-    return await response.json();
+    return await fetch(url, config);
 }
 
-export async function getEnrollmentPackages(termCode, subjectCode, courseId) {
+export async function searchCourses(term, keywords) {
+    const url = new URL(SEARCH_URL);
+    const searchBody = { ...SEARCH_CONFIG };
+    searchBody.selectedTerm = term;
+    searchBody.queryString = keywords || "";
+
+    return await fetchWithConfig(url, searchBody);
+}
+
+export async function processClassMeetings(termCode, subjectCode, courseId) {
     const url = `${ENROLLMENT_PACKAGES_URL}/${termCode}/${subjectCode}/${courseId}`;
-    return await fetchWithConfig(url);
-}
-
-export async function processClassMeetings(course) {
-    const { termCode, subject: { subjectCode }, courseId } = course;
-    const enrollmentPackages = await getEnrollmentPackages(termCode, subjectCode, courseId);
+    console.log(url);
+    const enrollmentPackages = await fetchWithConfig(url);
     return enrollmentPackages.flatMap(pkg => pkg.classMeetings || []);
-} 
+}

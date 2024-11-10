@@ -1,69 +1,22 @@
-import { processClassMeetings } from './enrollmentPackages.js';
+// courseinfo.js
+import { processClassMeetings, searchCourses } from './enrollmentPackages.js';
 
 // Constants
-const BASE_API_URL = 'https://public.enroll.wisc.edu/api/search/v1';
-const ENROLLMENT_PACKAGES_URL = `${BASE_API_URL}/enrollmentPackages`;
 const DEFAULT_TERM_CODE = '1252';
 
-// Search configuration
-const DEFAULT_SEARCH_CONFIG = {
-    page: 1,
-    pageSize: 10,
-    sortOrder: 'SCORE',
-    filters: [{
-        has_child: {
-            type: 'enrollmentPackage',
-            query: {
-                bool: {
-                    must: [
-                        { match: { 'packageEnrollmentStatus.status': 'OPEN WAITLISTED CLOSED' } },
-                        { match: { 'published': true } }
-                    ]
-                }
-            }
-        }
-    }]
-};
+async function getCourseInfo(input) {
+    const responseData = await searchCourses(DEFAULT_TERM_CODE, input.course_code);
+    const data = await responseData.json();
+    
+    const matchingCourses = data.hits.filter(course =>
+        input.course_code.includes(course.courseDesignation)
+    );
+    const course = matchingCourses;
+    const course_id = course[0].courseId;
+    course.classMeetings = await processClassMeetings(DEFAULT_TERM_CODE, input.subject_code, course_id);
 
-function normalizeCourseCode(input) {
-    // Handle null/undefined
-    if (!input) {
-        throw new Error('Course code input is null or undefined');
-    }
-
-    // Extract the code string from various possible object formats
-    const code = typeof input === 'object'
-        ? (input.courseDesignation || input.course_code || input.name)
-        : input;
-
-
-    return code
-        .replace(/[^a-zA-Z0-9]/g, '')
-        .toUpperCase();
-}
-
-async function fetchWithConfig(url, method = 'GET', body = null) {
-    const config = {
-        credentials: 'include',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        method,
-        mode: 'cors'
-    };
-
-    if (body) {
-        config.body = JSON.stringify(body);
-    }
-
-    const response = await fetch(url, config);
-
-    // if (!response.ok) {
-    //     throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-
-    return await response.json();
+    const formattedCourse = formatCourseInfo(course);
+    return formattedCourse;
 }
 
 function formatTime(milliseconds) {
@@ -82,41 +35,13 @@ function formatDate(milliseconds) {
     return date.toLocaleDateString(undefined, options);
 }
 
-async function getCourseInfo(input) {
-    const searchBody = {
-        ...DEFAULT_SEARCH_CONFIG,
-        selectedTerm: DEFAULT_TERM_CODE,
-        queryString: typeof input === 'object' 
-            ? (input.courseDesignation || input.course_code || input.name)
-            : input,
-    };
-
-    const responseData = await fetchWithConfig(
-        BASE_API_URL,
-        'POST',
-        searchBody
-    );
-
-    const normalizedInputCode = normalizeCourseCode(input);
-    const matchingCourses = responseData.hits.filter(course =>
-        course.courseDesignation &&
-        normalizeCourseCode(course.courseDesignation) === normalizedInputCode
-    );
-
-    const course = matchingCourses[0];
-    course.classMeetings = await processClassMeetings(DEFAULT_TERM_CODE, course);
-
-    const formattedCourse = formatCourseInfo(course);
-    return formattedCourse;
-}
-
 function formatCourseInfo(course) {
     const { courseDesignation, courseTitle, classMeetings } = course;
 
     // Initialize the course object
     const courseObj = {
-        courseCode: courseDesignation,
-        courseTitle: courseTitle,
+        courseCode: courseDesignation || 'N/A',
+        courseTitle: courseTitle || 'N/A',
         weeklyMeetings: [],
         exams: []
     };
@@ -129,8 +54,8 @@ function formatCourseInfo(course) {
                 days: meeting.meetingDays,
                 startTime: formatTime(meeting.meetingTimeStart),
                 endTime: formatTime(meeting.meetingTimeEnd),
-                building: meeting.building.buildingName,
-                room: meeting.room
+                building: meeting.building?.buildingName || 'N/A',
+                room: meeting.room || 'N/A'
             });
         } else if (meeting.meetingType === 'EXAM') {
             courseObj.exams.push({
@@ -145,4 +70,3 @@ function formatCourseInfo(course) {
 }
 
 export { getCourseInfo };
-
