@@ -13,44 +13,6 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { useRouter } from "expo-router";
 
-let sampleEventsJson = [
-	{
-		assignment: {
-			name: "Math Homework 1",
-			due_at: "2024-11-15T23:59:00Z",
-		},
-		context_name: "Math 101",
-	},
-	{
-		assignment: {
-			name: "Physics Lab Report",
-			due_at: "2024-11-18T17:00:00Z",
-		},
-		context_name: "Physics 201",
-	},
-	{
-		assignment: {
-			name: "History Essay",
-			due_at: "2024-11-20T23:59:00Z",
-		},
-		context_name: "History 101",
-	},
-	{
-		assignment: {
-			name: "Chemistry Quiz",
-			due_at: "2024-11-22T10:30:00Z",
-		},
-		context_name: "Chemistry 105",
-	},
-	{
-		assignment: {
-			name: "Computer Science Project",
-			due_at: "2024-11-25T12:00:00Z",
-		},
-		context_name: "CS 101",
-	},
-];
-
 async function getLocation(): Promise<{
 	lat: number | null;
 	long: number | null;
@@ -134,6 +96,7 @@ export default function TabOneScreen() {
         console.error('Error fetching events:', error);
       }
     }
+    fetchEvents();
     const interval = setInterval(() => fetchEvents(), 60000);
     return () => clearInterval(interval);
   }, [events]);
@@ -263,6 +226,8 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 20,
 		borderBottomLeftRadius: 20,
 		// height: 'auto' removed
+    justifyContent: "center",  // Centers horizontally
+    alignItems: "center",      // Centers vertically
 	},
 	contentContainer: {
 		flex: 1,
