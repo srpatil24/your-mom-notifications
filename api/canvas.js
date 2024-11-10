@@ -1,11 +1,10 @@
-const CANVAS_API_TOKEN = '8396~WAGHVha388TGKAfJEJcrnG7rZwE6KufwFhtQtXTfTmJT8mycec878PtUkXZe3Dxh';
 const CANVAS_API_BASE_URL = 'https://canvas.wisc.edu';
 
 // Step 1: Fetch Todo Items
-async function getTodoItems() {
+async function getTodoItems(apiToken) {
     const response = await fetch(`${CANVAS_API_BASE_URL}/api/v1/users/self/todo`, {
         headers: {
-            'Authorization': `Bearer ${CANVAS_API_TOKEN}`,
+            'Authorization': `Bearer ${apiToken}`,
             'Content-Type': 'application/json'
         }
     });
@@ -19,7 +18,7 @@ async function getTodoItems() {
 }
 
 // Step 2 & 3: Process Each Todo Item and Fetch Context Name
-async function processTodoItems(todoItems) {
+async function processTodoItems(todoItems, apiToken) {
     const sampleEventsJson = [];
 
     for (const item of todoItems) {
@@ -39,7 +38,7 @@ async function processTodoItems(todoItems) {
         if (item.course_id) {
             const courseResponse = await fetch(`${CANVAS_API_BASE_URL}/api/v1/courses/${item.course_id}`, {
                 headers: {
-                    'Authorization': `Bearer ${CANVAS_API_TOKEN}`,
+                    'Authorization': `Bearer ${apiToken}`,
                     'Content-Type': 'application/json'
                 }
             });

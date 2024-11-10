@@ -2,6 +2,7 @@ import { Button, StyleSheet, TextInput } from "react-native";
 import { Text, View } from "@/components/Themed";
 import * as Creds from "@/api/creds";
 import { useEffect, useState } from "react";
+import { getTodoItems } from "@/api/canvas";
 
 export default function SettingsScreen() {
 	const [canvasToken, setCanvasToken] = useState("");
@@ -15,6 +16,12 @@ export default function SettingsScreen() {
 		Creds.save("canvas.access-token", canvasToken);
 	}, [canvasToken]);
 
+	function validate() {
+		getTodoItems(canvasToken)
+			.then((res) => alert("Token is valid"))
+			.catch((err) => alert(err));
+	}
+
 	return (
 		<View style={styles.container}>
 			<Text>Login to show your course schedule</Text>
@@ -26,7 +33,7 @@ export default function SettingsScreen() {
 				placeholder="Canvas access token"
 				placeholderTextColor="white"
 			/>
-			<Button title="Validate" color="red" />
+			<Button title="Validate" color="red" onPress={validate} />
 		</View>
 	);
 }
@@ -35,7 +42,7 @@ const styles = StyleSheet.create({
 	container: {
 		width: "80%",
 		marginTop: 20,
-		marginHorizontal: "auto"
+		marginHorizontal: "auto",
 	},
 	input: {
 		height: 40,
@@ -43,7 +50,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		padding: 10,
 		color: "white",
-		backgroundColor: "#1b1b1b"
+		backgroundColor: "#1b1b1b",
 	},
 	title: {
 		fontSize: 20,
