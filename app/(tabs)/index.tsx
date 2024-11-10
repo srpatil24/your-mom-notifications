@@ -68,6 +68,45 @@ async function getWeather() {
 	});
 }
 
+// Type definitions
+interface Route {
+  departure_time: string;
+  arrival_time: string;
+  duration: string;
+  summary: string;
+}
+
+interface WeeklyMeeting {
+  type: string;
+  days: string;
+  startTime: string;
+  endTime: string;
+  buildingName: string;
+  latitude: number | 'N/A';
+  longitude: number | 'N/A';
+  room: string;
+}
+
+interface Exam {
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+interface CourseInfo {
+  courseCode: string;
+  courseTitle: string;
+  weeklyMeetings: WeeklyMeeting[];
+  exams: Exam[];
+  routes?: Route[];
+}
+
+interface LocationState {
+  lat: number | 'N/A';
+  long: number | 'N/A';
+  routes?: Route[];
+}
+
 interface Event {
 	assignment: {
 		name?: string;
@@ -83,6 +122,8 @@ export default function TabOneScreen() {
 
 	const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 	const [events, setEvents] = useState<Event[]>([]);
+  const [courseLocation, setCourseLocation] = useState<LocationState | null>(null);
+
 	useEffect(() => {
 		getWeather().then(setWeatherData);
 	}, []);
