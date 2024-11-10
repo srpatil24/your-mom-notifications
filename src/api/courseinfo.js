@@ -7,10 +7,13 @@ const DEFAULT_TERM_CODE = '1252';
 async function getCourseInfo(input) {
     const responseData = await searchCourses(DEFAULT_TERM_CODE, input.course_code);
     const data = await responseData.json();
-    
+
     const matchingCourses = data.hits.filter(course =>
         input.course_code.includes(course.courseDesignation)
     );
+    if (matchingCourses.length === 0) {
+        return;
+    }
     const course = matchingCourses[0];
     const course_id = course.courseId;
     course.classMeetings = await processClassMeetings(DEFAULT_TERM_CODE, input.subject_code, course_id);
@@ -54,7 +57,8 @@ function formatCourseInfo(course) {
                 startTime: formatTime(meeting.meetingTimeStart),
                 endTime: formatTime(meeting.meetingTimeEnd),
                 buildingName: meeting.building?.buildingName || 'N/A',
-                buiildingLocation: meeting.building?.location || 'N/A',
+                latitude: meeting.building?.latitude || 'N/A',
+                longitude: meeting.building?.longitude || 'N/A',
                 room: meeting.room || 'N/A'
             });
         } else if (meeting.meetingType === 'EXAM') {
@@ -65,7 +69,6 @@ function formatCourseInfo(course) {
             });
         }
     });
-
     return courseObj;
 }
 
