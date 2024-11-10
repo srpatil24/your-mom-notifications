@@ -19,8 +19,7 @@ import {
   processTodoItems,
   getCourses,
   processCourses,
-  getCourseInfo,
-  processClassMeetings
+  getCourseInfo
 } from './src/api/index.js';
 
 apiClient.interceptors.request.use(

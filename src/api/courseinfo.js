@@ -68,6 +68,7 @@ function formatCourseInfo(course) {
                 endTime: formatTime(meeting.meetingTimeEnd)
             });
         }
+        console.log(meeting)
     });
     return courseObj;
 }
