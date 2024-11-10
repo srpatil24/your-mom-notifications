@@ -7,7 +7,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-import { getWeatherData } from '../../weather.js';
+import { getWeatherData, getRoutes, getEvents, getTodoItems, processTodoItems } from '../../src/api/index.js';
 
 let sampleEventsJson = [
   {

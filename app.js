@@ -3,10 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { getWeatherData } from './weather.js';
-import { getRoutes } from './map.js';
-import { getEvents } from './events.js';
-import { getTodoItems, processTodoItems } from './canvas.js';
+import { getWeatherData, getRoutes, getEvents, getTodoItems, processTodoItems } from './src/api/index.js';
 
 dotenv.config();
 

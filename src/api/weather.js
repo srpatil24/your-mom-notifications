@@ -16,8 +16,8 @@ async function getWeatherData(latitude, longitude) {
 
   // Construct params with passed latitude and longitude
   const params = {
-    latitude: latitude,
-    longitude: longitude,
+    latitude,
+    longitude,
     current: ["temperature_2m", "apparent_temperature", "is_day"],
     daily: "precipitation_probability_max",
     temperature_unit: "fahrenheit",
@@ -37,23 +37,19 @@ async function getWeatherData(latitude, longitude) {
     }
     const data = await response.json();
 
-    const current = data.current;
-    const daily = data.daily;
-
-    const weatherData = {
+    return {
       current: {
-        temperature2m: current.temperature_2m,
-        apparentTemperature: current.apparent_temperature,
-        precipitation: current.precipitation,
+        temperature2m: data.current.temperature_2m,
+        apparentTemperature: data.current.apparent_temperature,
+        precipitation: data.current.precipitation,
       },
       daily: {
-        precipitationProbability: daily.precipitation_probability_max,
+        precipitationProbability: data.daily.precipitation_probability_max,
       },
     };
-    return weatherData;
   } catch (error) {
     console.error('Error fetching weather data:', error);
-    throw error; // Re-throw the error so it can be caught in app.js
+    throw error;
   }
 }
 
