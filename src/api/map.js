@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-
-const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const API_KEY = 'AIzaSyASj1Vpv_8mBvDqc88Ez8Rhro-JnBObzHA'
 const MAP_API_BASE_URL = 'https://maps.googleapis.com/maps/api/directions/json';
 
 async function getRoutes(originLatitude, originLongitude, destinationLatitude, destinationLongitude, transportationMode = 'walking') {

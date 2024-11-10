@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-
-const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
+const CANVAS_API_TOKEN = '8396~WAGHVha388TGKAfJEJcrnG7rZwE6KufwFhtQtXTfTmJT8mycec878PtUkXZe3Dxh';
 const CANVAS_API_BASE_URL = 'https://canvas.wisc.edu';
 
 // Step 1: Fetch Todo Items
@@ -49,7 +46,7 @@ async function processTodoItems(todoItems) {
             const course = await courseResponse.json();
             contextName = course.name;
         }
-        
+
         sampleEventsJson.push({
             assignment: assignmentData,
             context_name: contextName

@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { getWeatherData, getRoutes, getEvents, getTodoItems, processTodoItems } from './src/api/index.js';
+import { getWeatherData, getRoutes, getEvents, getTodoItems, processTodoItems, getCourses, processCourses } from './src/api/index.js';
 
 dotenv.config();
 
@@ -75,8 +75,29 @@ const testProcessTodoItems = async () => {
   }
 };
 
-testGetWeatherData();
-testGetRoutes();
+const testGetCourses = async () => {
+  try {
+    const courses = await getCourses();
+    console.log(courses);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+  }
+};
+
+const testProcessCourses = async () => {
+  try {
+    const courses = await getCourses();
+    const processedCourses = await processCourses(courses);
+    console.log(processedCourses);
+  } catch (error) {
+    console.error('Error processing courses:', error);
+  }
+};
+
+// testGetWeatherData();
+// testGetRoutes();
 // testGetEvents();
 // testGetTodoItems();
 // testProcessTodoItems();
+// testGetCourses();
+testProcessCourses();
