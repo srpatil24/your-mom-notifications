@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { getWeatherData } from './weather.js';
 import { getRoutes } from './map.js';
+import { getEvents } from './events.js';
 
 dotenv.config();
 
@@ -22,26 +23,33 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Function to test getWeatherData
 const testGetWeatherData = async () => {
   try {
     const weatherData = await getWeatherData();
+    console.log(weatherData);
   } catch (error) {
     console.error('Error fetching weather data:', error);
   }
 };
 
-// Function to test getWeatherData
 const testgetRoutes = async () => {
   try {
     const routeData = await getRoutes();
+    console.log(routeData);
   } catch (error) {
     console.error('Error fetching route data:', error);
   }
 };
 
-// Invoke the test function
-testGetWeatherData();
+const testgetEvents = async () => {
+  try {
+    const eventData = await getEvents();
+    console.log(eventData);
+  } catch (error) {
+    console.error('Error fetching event data:', error);
+  }
+};
 
-// Invoke the test function
+testGetWeatherData();
 testgetRoutes();
+testgetEvents();
