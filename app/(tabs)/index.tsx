@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, View } from '@/components/Themed';
-import * as Location from 'expo-location';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { Text, View } from "@/components/Themed";
+import * as Location from "expo-location";
 
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 import { getWeatherData } from "@/api/weather.js";
+import * as Creds from "@/api/creds";
 import { getTodoItems, processTodoItems } from "@/api/canvas.js";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -30,14 +31,14 @@ async function getLocation(): Promise<{
 }
 
 async function requestBackgroundPermissions() {
-  let { status } = await Location.requestBackgroundPermissionsAsync();
-  if (status !== 'granted') {
-    console.error('Permission to access location was denied');
-    return false;
-  }
+	let { status } = await Location.requestBackgroundPermissionsAsync();
+	if (status !== "granted") {
+		console.error("Permission to access location was denied");
+		return false;
+	}
 
-  return true;
-};
+	return true;
+}
 
 interface WeatherData {
 	current: {
@@ -86,30 +87,31 @@ export default function TabOneScreen() {
 		getWeather().then(setWeatherData);
 	}, []);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const todoItems = await getTodoItems();
-        const processedItems = await processTodoItems(todoItems);
-        setEvents(processedItems);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      }
-    }
-    fetchEvents();
-    const interval = setInterval(() => fetchEvents(), 60000);
-    return () => clearInterval(interval);
-  }, [events]);
+	useEffect(() => {
+		async function fetchEvents() {
+			try {
+				const todoItems = await getTodoItems(
+					await Creds.getValueFor("canvas.access-token"),
+				);
+				const processedItems = await processTodoItems(todoItems);
+				setEvents(processedItems);
+			} catch (error) {
+				console.error("Error fetching events:", error);
+			}
+		}
+		fetchEvents();
+		const interval = setInterval(() => fetchEvents(), 60000);
+		return () => clearInterval(interval);
+	}, [events]);
 
+	const router = useRouter();
 
-  const router = useRouter();
-
-  const handleEventPress = (event: Event) => {
-    router.push({
-      pathname: "/AssignmentDetailsScreen",
-      params: { event: JSON.stringify(event) },
-    });
-  };
+	const handleEventPress = (event: Event) => {
+		router.push({
+			pathname: "/AssignmentDetailsScreen",
+			params: { event: JSON.stringify(event) },
+		});
+	};
 
 	return (
 		<View>
@@ -191,7 +193,7 @@ function EventContainer({ event }: { event: any }) {
 					<Text style={styles.eventTitle}>{event.assignment.name}</Text>
 					<Text style={styles.courseName}>{event.context_name}</Text>
 					<Text style={styles.eventDueDate}>
-            Due: {new Date(event.assignment.due_at).toLocaleString()}
+						Due: {new Date(event.assignment.due_at).toLocaleString()}
 					</Text>
 				</View>
 			</View>
@@ -226,8 +228,8 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 20,
 		borderBottomLeftRadius: 20,
 		// height: 'auto' removed
-    justifyContent: "center",  // Centers horizontally
-    alignItems: "center",      // Centers vertically
+		justifyContent: "center", // Centers horizontally
+		alignItems: "center", // Centers vertically
 	},
 	contentContainer: {
 		flex: 1,
