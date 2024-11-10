@@ -1,15 +1,4 @@
 // weather.js
-const params = {
-  latitude: 43.074302,
-  longitude: -89.400024,
-  hourly: [
-    'temperature_2m',
-    'apparent_temperature',
-    'precipitation_probability',
-    'precipitation',
-  ],
-  timezone: 'America/Chicago',
-};
 
 // Function to get formatted date in YYYY-MM-DD
 function getFormattedDate(date) {
@@ -20,19 +9,24 @@ function getFormattedDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-async function getWeatherData() {
+async function getWeatherData(latitude, longitude) {
   // Get today's date
   const today = new Date();
   const formattedDate = getFormattedDate(today);
 
-  // Add start_date and end_date to params for a single day
-  const singleDayParams = {
-    ...params,
+  // Construct params with passed latitude and longitude
+  const params = {
+    latitude: latitude,
+    longitude: longitude,
+    current: ["temperature_2m", "apparent_temperature", "is_day"],
+    daily: "precipitation_probability_max",
+    temperature_unit: "fahrenheit",
+    precipitation_unit: "inch",
     start_date: formattedDate,
     end_date: formattedDate,
   };
 
-  const queryString = new URLSearchParams(singleDayParams).toString();
+  const queryString = new URLSearchParams(params).toString();
   const url = 'https://api.open-meteo.com/v1/forecast';
   const fullUrl = `${url}?${queryString}`;
 
@@ -43,17 +37,19 @@ async function getWeatherData() {
     }
     const data = await response.json();
 
-    const hourly = data.hourly;
+    const current = data.current;
+    const daily = data.daily;
 
     const weatherData = {
-      hourly: {
-        time: hourly.time.map((t) => new Date(t).toISOString()),
-        temperature2m: hourly.temperature_2m,
-        apparentTemperature: hourly.apparent_temperature,
-        precipitationProbability: hourly.precipitation_probability,
+      current: {
+        temperature2m: current.temperature_2m,
+        apparentTemperature: current.apparent_temperature,
+        precipitation: current.precipitation,
+      },
+      daily: {
+        precipitationProbability: daily.precipitation_probability_max,
       },
     };
-    console.log(weatherData)
     return weatherData;
   } catch (error) {
     console.error('Error fetching weather data:', error);

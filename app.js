@@ -25,8 +25,11 @@ const PORT = process.env.PORT || 5000;
 // });
 
 const testGetWeatherData = async () => {
+  const latitude = 43.074302; // Replace with desired latitude
+  const longitude = -89.400024; // Replace with desired longitude
+
   try {
-    const weatherData = await getWeatherData();
+    const weatherData = await getWeatherData(latitude, longitude);
     console.log(weatherData);
   } catch (error) {
     console.error('Error fetching weather data:', error);
@@ -34,8 +37,13 @@ const testGetWeatherData = async () => {
 };
 
 const testGetRoutes = async () => {
+  const originLatitude = 43.074302;      // Replace with your origin latitude
+  const originLongitude = -89.400024;    // Replace with your origin longitude
+  const destinationLatitude = 43.075111; // Replace with your destination latitude
+  const destinationLongitude = -89.4018738; // Replace with your destination longitude
+  const transportationMode = 'walking';  // Can be 'walking', 'driving', 'bicycling', etc.
   try {
-    const routeData = await getRoutes();
+    const routeData = await getRoutes(originLatitude, originLongitude, destinationLatitude, destinationLongitude, transportationMode);
     console.log(routeData);
   } catch (error) {
     console.error('Error fetching route data:', error);
@@ -71,7 +79,7 @@ const testProcessTodoItems = async () => {
 };
 
 // testGetWeatherData();
-// testGetRoutes();
+testGetRoutes();
 // testGetEvents();
 // testGetTodoItems();
-testProcessTodoItems();
+// testProcessTodoItems();

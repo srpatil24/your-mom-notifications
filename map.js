@@ -1,16 +1,20 @@
-const API_KEY = 'AIzaSyASj1Vpv_8mBvDqc88Ez8Rhro-JnBObzHA';
-const origin = '43.074302,-89.400024';
-const destination = '43.075111,-89.4018738';
-const transportationMode = 'walking';
-const base_url = 'https://maps.googleapis.com/maps/api/directions/json';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 
-// Generate arrival time 5 minutes from now
-const arrival_time = new Date();
-arrival_time.setMinutes(arrival_time.getMinutes() + 5);
+const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const MAP_API_BASE_URL = 'https://maps.googleapis.com/maps/api/directions/json';
 
-const routes = [];
+async function getRoutes(originLatitude, originLongitude, destinationLatitude, destinationLongitude, transportationMode = 'walking') {
+    // Format the origin and destination coordinates
+    const origin = `${originLatitude},${originLongitude}`;
+    const destination = `${destinationLatitude},${destinationLongitude}`;
 
-const getRoutes = async () => {
+    // Generate arrival time 5 minutes from now
+    const arrival_time = new Date();
+    arrival_time.setMinutes(arrival_time.getMinutes() + 5);
+
+    const routes = [];
+
     const params = new URLSearchParams({
         origin: origin,
         destination: destination,
@@ -20,7 +24,7 @@ const getRoutes = async () => {
     });
 
     try {
-        const response = await fetch(`${base_url}?${params.toString()}`);
+        const response = await fetch(`${MAP_API_BASE_URL}?${params.toString()}`);
         const data = await response.json();
 
         if (data.status === 'OK') {
@@ -33,12 +37,16 @@ const getRoutes = async () => {
                     summary: route.summary
                 });
             }
+        } else {
+            console.error('Error in response:', data.status);
         }
     } catch (error) {
         console.error('Error fetching route:', error);
+        throw error; // Re-throw the error for handling in the calling function
     }
 
     console.log(routes);
-};
+    return routes;
+}
 
 export { getRoutes };

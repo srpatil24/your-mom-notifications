@@ -93,7 +93,6 @@ export { getTodoItems, processTodoItems };
         ];
 
         const processedItems = await processTodoItems(todoItems);
-        console.log('Processed Items:', processedItems);
     } catch (error) {
         console.error('Error processing todo items:', error);
     }
