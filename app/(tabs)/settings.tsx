@@ -1,31 +1,34 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { Button, StyleSheet } from "react-native";
+import { Text, View } from "@/components/Themed";
+import * as WebBrowser from "expo-web-browser";
 
 export default function SettingsScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
-    </View>
-  );
+  const handleAuth = async () => {
+    const res = await WebBrowser.openAuthSessionAsync("https://my.wisc.edu", "https://my.wisc.edu/web/compact");
+    console.log(res);
+  }
+
+	return (
+		<View style={styles.container}>
+      <Text>Login to show your course schedule</Text>
+			<Button title="Authorize with wisc.edu" color="red" onPress={handleAuth} />
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+	container: {
+		flex: 1,
+		alignItems: "center",
+    gap: 20
+	},
+	title: {
+		fontSize: 20,
+		fontWeight: "bold",
+	},
+	separator: {
+		marginVertical: 30,
+		height: 1,
+		width: "80%",
+	},
 });
