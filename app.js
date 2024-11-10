@@ -127,8 +127,4 @@ const testAllCourses = async () => {
   }
 };
 
-<<<<<<< HEAD
 testAllCourses();
-=======
-testAllCourses();
->>>>>>> sidsBrokenBranch
