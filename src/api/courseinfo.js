@@ -40,7 +40,6 @@ function formatDate(milliseconds) {
 function formatCourseInfo(course) {
     const { courseDesignation, title, classMeetings } = course;
 
-    // Initialize the course object
     const courseObj = {
         courseCode: courseDesignation || 'N/A',
         courseTitle: title || 'N/A',
@@ -48,17 +47,16 @@ function formatCourseInfo(course) {
         exams: []
     };
 
-    // Iterate through class meetings and categorize them
     classMeetings.forEach(meeting => {
         if (meeting.meetingType === 'CLASS') {
             courseObj.weeklyMeetings.push({
-                type: meeting.meetingOrExamNumber, // Adjust if there's a better field
+                type: meeting.meetingOrExamNumber,
                 days: meeting.meetingDays,
                 startTime: formatTime(meeting.meetingTimeStart),
                 endTime: formatTime(meeting.meetingTimeEnd),
                 buildingName: meeting.building?.buildingName || 'N/A',
-                latitude: meeting.building?.latitude || 'N/A',
-                longitude: meeting.building?.longitude || 'N/A',
+                latitude: meeting.building?.latitude ? parseFloat(meeting.building.latitude) : 'N/A',
+                longitude: meeting.building?.longitude ? parseFloat(meeting.building.longitude) : 'N/A',
                 room: meeting.room || 'N/A'
             });
         } else if (meeting.meetingType === 'EXAM') {
@@ -68,7 +66,6 @@ function formatCourseInfo(course) {
                 endTime: formatTime(meeting.meetingTimeEnd)
             });
         }
-        console.log(meeting)
     });
     return courseObj;
 }

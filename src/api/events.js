@@ -1,4 +1,4 @@
-import ical from 'node-ical';
+// import ical from 'node-ical';
 
 // URL of the ICS file
 const url = 'https://today.wisc.edu/events.ics';

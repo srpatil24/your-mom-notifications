@@ -119,7 +119,8 @@ const testAllCourses = async () => {
       }
     }
 
-    console.log('Detailed Course Infos:', courseInfos);
+    console.log('Course Latitude:', courseInfos[0].weeklyMeetings[0].latitude);
+    console.log('Course Longitude:', courseInfos[0].weeklyMeetings[0].longitude);
     return courseInfos;
   } catch (error) {
     console.error('Courses test failed:', error);
