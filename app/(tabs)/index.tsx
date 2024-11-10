@@ -11,6 +11,8 @@ import { getWeatherData } from '../../weather.js';
 import { getTodoItems, processTodoItems } from '../../canvas.js';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { useRouter } from 'expo-router';
+
 let sampleEventsJson = [
   {
     "assignment": {
@@ -72,6 +74,15 @@ interface WeatherData {
     precipitationProbability: number;
   };
 }
+
+const router = useRouter();
+
+const handleEventPress = (event: Event) => {
+  router.push({
+    pathname: '/AssignmentDetailsScreen',
+    params: { event: JSON.stringify(event) },
+  });
+};
 
 let weatherData: WeatherData | null = null;
 
@@ -151,7 +162,7 @@ export default function TabOneScreen() {
           </View>
         </LinearGradient>
         {events.map((event: Event) => (
-          <TouchableOpacity key={event.assignment.name}>
+          <TouchableOpacity key={event.assignment.name} onPress={() => handleEventPress(event)}>
             <EventContainer event={event} />
           </TouchableOpacity>
         ))}
@@ -167,7 +178,7 @@ function EventContainer({ event }: { event: any }) {
   return (
     <View style={styles.eventContainer}>
       <FontAwesome
-        name="pencil"
+        name={event.assignment.is_quiz_assignment ? "flag-o" : "book"}
         size={25}
         color={Colors[colorScheme ?? 'light'].text}
         style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
@@ -200,7 +211,7 @@ const styles = StyleSheet.create({
   },
   eventContainer: {
     flexDirection: 'row',
-    width: '100%',
+    width: '95%',
     alignSelf: "center",
     height: 100,
     // height: "100%",
@@ -237,7 +248,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   weatherContainer: {
-    width: '90%',
+    width: '95%',
     alignSelf: "center",
     height: 180,
     marginBottom: 20,

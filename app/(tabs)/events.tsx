@@ -56,6 +56,7 @@ export default function EventsScreen() {
     const [events, setEvents] = useState<Event[]>([]);
 
 
+
     useEffect(() => {
         async function fetchEvents(){
           try {
@@ -84,7 +85,7 @@ function EventContainer({ event }: { event: any }) {
     return (
         <View style={styles.eventContainer}>
             <FontAwesome
-                name="pencil"
+                name="calendar-check-o"
                 size={25}
                 color={Colors[colorScheme ?? 'light'].text}
                 style={{ marginRight: 5, textAlignVertical: 'center', alignItems: "center", textAlign: "center", marginLeft: 15 }}
