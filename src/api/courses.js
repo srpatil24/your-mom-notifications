@@ -4,9 +4,9 @@ dotenv.config({ path: '.env.local' });
 const CANVAS_API_TOKEN = process.env.CANVAS_API_TOKEN;
 const CANVAS_API_BASE_URL = 'https://canvas.wisc.edu';
 
-// Step 1: Fetch Todo Items
-async function getTodoItems() {
-    const response = await fetch(`${CANVAS_API_BASE_URL}/api/v1/users/self/todo`, {
+// Step 1: Fetch Courses
+async function getCourses() {
+    const response = await fetch(`${CANVAS_API_BASE_URL}/api/v1/courses`, {
         headers: {
             'Authorization': `Bearer ${CANVAS_API_TOKEN}`,
             'Content-Type': 'application/json'
@@ -17,15 +17,15 @@ async function getTodoItems() {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const todoItems = await response.json();
-    return todoItems;
+    const courses = await response.json();
+    return courses;
 }
 
 // Step 2 & 3: Process Each Todo Item and Fetch Context Name
-async function processTodoItems(todoItems) {
+async function processCourses(courses) {
     const sampleEventsJson = [];
 
-    for (const item of todoItems) {
+    for (const item of courses) {
         let assignmentData = {};
         let contextName = '';
 
