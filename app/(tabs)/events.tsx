@@ -99,7 +99,7 @@ function EventContainer({ event }: { event: any }) {
 					<Text style={styles.eventTitle}>{event.title}</Text>
 					<Text style={styles.courseName}>{event.location}</Text>
 					<Text style={styles.eventDueDate}>
-						{event.start} - {event.end}
+						{new Date(event.start).toLocaleString()} - {new Date(event.end).toLocaleString()}
 					</Text>
 				</View>
 			</View>

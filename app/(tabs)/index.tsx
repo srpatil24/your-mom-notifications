@@ -88,15 +88,6 @@ interface WeatherData {
 	};
 }
 
-const router = useRouter();
-
-const handleEventPress = (event: Event) => {
-	router.push({
-		pathname: "/AssignmentDetailsScreen",
-		params: { event: JSON.stringify(event) },
-	});
-};
-
 let weatherData: WeatherData | null = null;
 
 async function getWeather() {
@@ -146,6 +137,16 @@ export default function TabOneScreen() {
     const interval = setInterval(() => fetchEvents(), 60000);
     return () => clearInterval(interval);
   }, [events]);
+
+
+  const router = useRouter();
+
+  const handleEventPress = (event: Event) => {
+    router.push({
+      pathname: "/AssignmentDetailsScreen",
+      params: { event: JSON.stringify(event) },
+    });
+  };
 
 	return (
 		<View>
@@ -227,7 +228,7 @@ function EventContainer({ event }: { event: any }) {
 					<Text style={styles.eventTitle}>{event.assignment.name}</Text>
 					<Text style={styles.courseName}>{event.context_name}</Text>
 					<Text style={styles.eventDueDate}>
-						Due: {event.assignment.due_at}
+            Due: {new Date(event.assignment.due_at).toLocaleString()}
 					</Text>
 				</View>
 			</View>
