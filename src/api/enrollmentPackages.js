@@ -24,7 +24,7 @@ const SEARCH_CONFIG = {
 };
 
 // Fetch configuration with additional headers
-async function fetchWithConfig(url, body = null) {
+async function fetchWithConfig(url, body = null, method = 'POST') {
     const config = {
         credentials: 'include',
         headers: {
@@ -39,7 +39,7 @@ async function fetchWithConfig(url, body = null) {
             'Sec-Fetch-Site': 'same-origin',
             'Priority': 'u=0'
         },
-        method: 'POST',
+        method: method,
         body: body ? JSON.stringify(body) : null,
         mode: 'cors'
     };
@@ -58,7 +58,7 @@ export async function searchCourses(term, keywords) {
 
 export async function processClassMeetings(termCode, subjectCode, courseId) {
     const url = `${ENROLLMENT_PACKAGES_URL}/${termCode}/${subjectCode}/${courseId}`;
-    console.log(url);
-    const enrollmentPackages = await fetchWithConfig(url);
-    return enrollmentPackages.flatMap(pkg => pkg.classMeetings || []);
+    const response = await fetchWithConfig(url, null, 'GET');
+    const data = await response.json();
+    return data.flatMap(pkg => pkg.classMeetings || []);
 }

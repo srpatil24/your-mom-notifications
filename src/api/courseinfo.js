@@ -11,10 +11,9 @@ async function getCourseInfo(input) {
     const matchingCourses = data.hits.filter(course =>
         input.course_code.includes(course.courseDesignation)
     );
-    const course = matchingCourses;
-    const course_id = course[0].courseId;
+    const course = matchingCourses[0];
+    const course_id = course.courseId;
     course.classMeetings = await processClassMeetings(DEFAULT_TERM_CODE, input.subject_code, course_id);
-
     const formattedCourse = formatCourseInfo(course);
     return formattedCourse;
 }
@@ -36,12 +35,12 @@ function formatDate(milliseconds) {
 }
 
 function formatCourseInfo(course) {
-    const { courseDesignation, courseTitle, classMeetings } = course;
+    const { courseDesignation, title, classMeetings } = course;
 
     // Initialize the course object
     const courseObj = {
         courseCode: courseDesignation || 'N/A',
-        courseTitle: courseTitle || 'N/A',
+        courseTitle: title || 'N/A',
         weeklyMeetings: [],
         exams: []
     };
