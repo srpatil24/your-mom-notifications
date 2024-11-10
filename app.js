@@ -1,100 +1,91 @@
 // app.js
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import { getWeatherData, getRoutes, getEvents, getTodoItems, processTodoItems, getCourses, processCourses } from './src/api/index.js';
+import axios from 'axios';
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+// Configure base API settings
+const apiClient = axios.create({
+  baseURL: 'YOUR_API_BASE_URL', // Replace with your actual API base URL
+  headers: {
+    'Content-Type': 'application/json',
+    'Platform': 'android',
+  },
+});
 
-const PORT = 5000;
+// Import your API functions
+import { 
+  getWeatherData, 
+  getRoutes, 
+  getEvents, 
+  getTodoItems, 
+  processTodoItems, 
+  getCourses, 
+  processCourses, 
+  getCourseInfo 
+} from './src/api/index.js';
 
-// app.get('/', (req, res) => {
-//   res.send('Backend Server is Running');
-// });
+apiClient.interceptors.request.use(
+  (config) => {
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
-
-const testGetWeatherData = async () => {
-  const latitude = 43.074302; // Replace with desired latitude
-  const longitude = -89.400024; // Replace with desired longitude
-
+// Test functions
+const testWeather = async () => {
   try {
-    const weatherData = await getWeatherData(latitude, longitude);
-    console.log(weatherData);
+    const data = await getWeatherData();
+    console.log('Weather test:', data);
+    return data;
   } catch (error) {
-    console.error('Error fetching weather data:', error);
+    console.error('Weather test failed:', error);
+    throw error;
   }
 };
 
-const testGetRoutes = async () => {
-  const originLatitude = 43.074302;      // Replace with your origin latitude
-  const originLongitude = -89.400024;    // Replace with your origin longitude
-  const destinationLatitude = 43.075111; // Replace with your destination latitude
-  const destinationLongitude = -89.4018738; // Replace with your destination longitude
-  const transportationMode = 'walking';  // Can be 'walking', 'driving', 'bicycling', etc.
+const testRoutes = async () => {
   try {
-    const routeData = await getRoutes(originLatitude, originLongitude, destinationLatitude, destinationLongitude, transportationMode);
-    console.log(routeData);
+    const data = await getRoutes();
+    console.log('Routes test:', data);
+    return data;
   } catch (error) {
-    console.error('Error fetching route data:', error);
+    console.error('Routes test failed:', error);
+    throw error;
   }
 };
 
-const testGetEvents = async () => {
+const testEvents = async () => {
   try {
-    const eventData = await getEvents();
-    console.log(eventData);
+    const data = await getEvents();
+    console.log('Events test:', data);
+    return data;
   } catch (error) {
-    console.error('Error fetching event data:', error);
+    console.error('Events test failed:', error);
+    throw error;
   }
 };
 
-const testGetTodoItems = async () => {
-  try {
-    const todoItems = await getTodoItems();
-    console.log(todoItems[0]);
-  } catch (error) {
-    console.error('Error fetching todo items:', error);
-  }
-};
-
-const testProcessTodoItems = async () => {
+const testTodos = async () => {
   try {
     const items = await getTodoItems();
-    const todoItems = await processTodoItems(items);
-    console.log(todoItems);
+    const processed = await processTodoItems(items);
+    console.log('Todos test:', processed);
+    return processed;
   } catch (error) {
-    console.error('Error processing todo items:', error);
+    console.error('Todos test failed:', error);
+    throw error;
   }
 };
 
-const testGetCourses = async () => {
+const testCourses = async () => {
   try {
     const courses = await getCourses();
-    console.log(courses);
+    const processed = await processCourses(courses);
+    const info = await getCourseInfo('COMP SCI 544');
+    console.log('Courses test:', processed);
+    return { processed, info };
   } catch (error) {
-    console.error('Error fetching courses:', error);
+    console.error('Courses test failed:', error);
+    throw error;
   }
 };
-
-const testProcessCourses = async () => {
-  try {
-    const courses = await getCourses();
-    const processedCourses = await processCourses(courses);
-    console.log(processedCourses);
-  } catch (error) {
-    console.error('Error processing courses:', error);
-  }
-};
-
-// testGetWeatherData();
-// testGetRoutes();
-// testGetEvents();
-// testGetTodoItems();
-// testProcessTodoItems();
-// testGetCourses();
-testProcessCourses();
