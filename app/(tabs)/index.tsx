@@ -13,6 +13,8 @@ import { getTodoItems, processTodoItems } from "@/api/canvas.js";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useRouter } from "expo-router";
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs()
 
 async function getLocation(): Promise<{
 	lat: number | null;
@@ -128,20 +130,24 @@ export default function TabOneScreen() {
 		getWeather().then(setWeatherData);
 	}, []);
 
+  const [token, setToken] = useState<string | null>(null);
+
 	useEffect(() => {
 		async function fetchEvents() {
 			try {
-				const todoItems = await getTodoItems(
-					await Creds.getValueFor("canvas.access-token"),
-				);
-				const processedItems = await processTodoItems(todoItems);
-				setEvents(processedItems);
+        const t = await Creds.getValueFor("canvas.access-token");
+        if (t !== token) {
+          const todoItems = await getTodoItems(t);
+          const processedItems = await processTodoItems(todoItems);
+          setToken(t);
+          setEvents(processedItems);
+        }
 			} catch (error) {
-				console.error("Error fetching events:", error);
+				// console.error("Error fetching events:", error);
 			}
 		}
 		fetchEvents();
-		const interval = setInterval(() => fetchEvents(), 60000);
+		const interval = setInterval(() => fetchEvents(), 1000);
 		return () => clearInterval(interval);
 	}, [events]);
 
