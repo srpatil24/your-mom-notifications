@@ -53,7 +53,8 @@ function formatCourseInfo(course) {
                 days: meeting.meetingDays,
                 startTime: formatTime(meeting.meetingTimeStart),
                 endTime: formatTime(meeting.meetingTimeEnd),
-                building: meeting.building?.buildingName || 'N/A',
+                buildingName: meeting.building?.buildingName || 'N/A',
+                buiildingLocation: meeting.building?.location || 'N/A',
                 room: meeting.room || 'N/A'
             });
         } else if (meeting.meetingType === 'EXAM') {

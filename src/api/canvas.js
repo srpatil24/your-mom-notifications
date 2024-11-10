@@ -36,7 +36,7 @@ async function processTodoItems(todoItems) {
         };
 
         // Fetch context name based on context_type
-        if (item.context_type === 'course' && item.course_id) {
+        if (item.course_id) {
             const courseResponse = await fetch(`${CANVAS_API_BASE_URL}/api/v1/courses/${item.course_id}`, {
                 headers: {
                     'Authorization': `Bearer ${CANVAS_API_TOKEN}`,
