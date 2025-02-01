@@ -14,7 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { useRouter } from "expo-router";
 import { getCourses, processCourses } from "@/api/courses.js";
-import { getCourseInfo } from "@/api/courseinfo.js";
+import { getCourseInfo } from "@/api/courseInfo.js";
 
 let sampleEventsJson = [
   {
